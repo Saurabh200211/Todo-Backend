@@ -1,25 +1,28 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-require("dotenv").config(); // Loads .env file
+require("dotenv").config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/todomongodb+srv://satputesaurabh169:Saurabh@cluster0.y9l6ymi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-; // fallback for local dev
+const MONGO_URI = process.env.MONGO_URI; // Use only Atlas from .env
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: "*", // allow all origins (restrict to frontend domain in prod)
+  })
+);
 app.use(express.json());
 
 // MongoDB Connection
 mongoose
   .connect(MONGO_URI, {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
   })
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error("Could not connect to MongoDB", err));
+  .then(() => console.log("✅ Connected to MongoDB Atlas"))
+  .catch((err) => console.error("❌ Could not connect to MongoDB", err));
 
 // Task Schema
 const taskSchema = new mongoose.Schema({
@@ -30,6 +33,10 @@ const taskSchema = new mongoose.Schema({
 const Task = mongoose.model("Task", taskSchema);
 
 // Routes
+app.get("/", (req, res) => {
+  res.send("🚀 Backend is running with MongoDB Atlas. Use /tasks API.");
+});
+
 app.get("/tasks", async (req, res) => {
   try {
     const tasks = await Task.find();
@@ -76,5 +83,5 @@ app.delete("/tasks/:id", async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`✅ Server is running on http://localhost:${PORT}`);
 });
