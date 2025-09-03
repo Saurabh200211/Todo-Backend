@@ -15,7 +15,7 @@ if (!MONGO_URI) {
 // Middleware
 app.use(
   cors({
-    origin: ["http://localhost:3000", "https://todo-frontend-eta-one.vercel.app"], 
+    origin: ["https://todo-frontend-eta-one.vercel.app"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
