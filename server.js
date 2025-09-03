@@ -4,40 +4,38 @@ const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
-
-// ✅ Define PORT safely
 const PORT = process.env.PORT || 5000;
-
-// ✅ Check MONGO_URI properly
 const MONGO_URI = process.env.MONGO_URI;
+
 if (!MONGO_URI) {
   console.error("❌ MONGO_URI is not defined in .env file");
-  process.exit(1); // stop server if no DB URI
+  process.exit(1);
 }
 
 // Middleware
 app.use(
   cors({
-    origin: "https://todo-frontend-eta-one.vercel.app", // In production, replace with frontend domain
+    origin: ["http://localhost:3000", "https://todo-frontend-eta-one.vercel.app"], 
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
   })
 );
 app.use(express.json());
 
-// ✅ MongoDB Connection
+// ✅ Connect MongoDB
 mongoose
-  .connect(MONGO_URI)
+  .connect(MONGO_URI, { dbName: "todoDB" })
   .then(() => console.log("✅ Connected to MongoDB Atlas"))
   .catch((err) => {
     console.error("❌ Could not connect to MongoDB:", err.message);
     process.exit(1);
   });
 
-// ✅ Task Schema
+// Schema
 const taskSchema = new mongoose.Schema({
   text: { type: String, required: true },
   completed: { type: Boolean, default: false },
 });
-
 const Task = mongoose.model("Task", taskSchema);
 
 // Routes
@@ -90,7 +88,6 @@ app.delete("/tasks/:id", async (req, res) => {
   }
 });
 
-// ✅ Start server
 app.listen(PORT, () => {
   console.log(`✅ Server is running on http://localhost:${PORT}`);
 });
