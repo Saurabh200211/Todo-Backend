@@ -18,7 +18,7 @@ if (!MONGO_URI) {
 // Middleware
 app.use(
   cors({
-    origin: "*", // In production, replace with frontend domain
+    origin: "https://todo-frontend-eta-one.vercel.app", // In production, replace with frontend domain
   })
 );
 app.use(express.json());
