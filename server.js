@@ -15,7 +15,10 @@ if (!MONGO_URI) {
 // Middleware
 app.use(
   cors({
-    origin: ["https://todo-frontend-eta-one.vercel.app"],
+    origin: [
+      "http://localhost:3000",                 // local React
+      "https://todo-frontend-blond-one.vercel.app" // deployed React ✅ no slash
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
@@ -69,7 +72,14 @@ app.put("/tasks/:id", async (req, res) => {
     const { id } = req.params;
     const task = await Task.findById(id);
     if (!task) return res.status(404).send("Task not found");
-    task.completed = !task.completed;
+
+    // ✅ update completion based on body
+    if (typeof req.body.completed === "boolean") {
+      task.completed = req.body.completed;
+    } else {
+      task.completed = !task.completed; // fallback toggle
+    }
+
     await task.save();
     res.json(task);
   } catch (err) {
